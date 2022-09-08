@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 11:34:49 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/06 11:53:44 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/08 01:16:24 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	my_usleep(int mcrs)
 	usleep(mcrs);
 }
 
-long long	get_current_time(void)
+unsigned long	get_current_time(void)
 {
 	struct timeval	tp;
 

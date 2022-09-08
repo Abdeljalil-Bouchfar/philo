@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 15:57:03 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/06 11:51:48 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/08 07:09:54 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,49 @@
 # include <unistd.h>
 # include <errno.h>
 
+# define RED "\033[0;31m"
+# define GREEN "\033[0;32m"
+# define YELLOW "\033[0;33m"
+# define BLUE "\033[0;34m"
+# define PURPLE "\033[0;35m"
+# define RESET "\033[0m"
+
 /*
 	All time in the program is with microseconds
+	
+	Philo Status:
+		0: Nothing
+		1: Eeating
+		2: Sleeping
+		3: Thinking
+	
+	Fork Status:
+		0: On the taple
+		1: Taken
 
-
-
-
+	When a philosopher has finished eating, they put their forks back
+	on the table and start sleeping. Once awake, they start thinking again.
+	The simulation stops when a philosopher dies of starvation.
+	
+	No need to say that philosophers should avoid dying!
 */
-
-typedef struct s_philo
-{
-	int	id;
-	int	left_fork;
-	int	right_fork;
-	int	status;
-}	t_philo;
 
 typedef struct s_fork_lst
 {
 	int					id;
 	int					philo_id;
 	struct s_fork_lst	*next;
-	struct s_fork_lst	*head;
+	pthread_mutex_t		status;
 }	t_fork_lst;
+
+typedef struct s_philo
+{
+	int			id;
+	int			is_eating;
+	int			min_eat;
+	t_fork_lst	*left_fork;
+	t_fork_lst	*right_fork;
+}	t_philo;
 
 typedef struct s_alloc_lst
 {
@@ -52,29 +72,36 @@ typedef struct s_alloc_lst
 
 typedef struct s_data
 {
+	int 			i;
 	long long		start_time;
 	int				philos_nbr;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int				philo_meat_nbr;
+	int				min_eat;
 	t_philo			**philos;
 	t_fork_lst		**forks;
 	t_alloc_lst		**alloc_list;
+	pthread_mutex_t	print;
 }	t_data;
 
 //------------------ Time Functins ------------------
 
-long long	get_current_time(void);
-void		my_usleep(int mcrs);
+unsigned long	get_current_time(void);
+void			my_usleep(int mcrs);
 
 //--------------------- Utils -----------------------
-int			ft_atoi(const char *str);
-void		ft_putstr_fd(char *s, int fd);
-void		print_error(char *error);
-void		*alloc(size_t size, t_data *data);
-void		ft_lstclear(t_alloc_lst **lst);
+int				ft_atoi(const char *str);
+void			ft_putstr_fd(char *s, int fd);
+void			print_error(char *error);
+void			*alloc(size_t size, t_data *data);
+void			ft_lstclear(t_alloc_lst **lst);
 
-void		insert_frok_lst(t_fork_lst	**head, int id, int philo_id);
+void			insert_frok_lst(t_fork_lst	**head, int id);
+
+//--
+void			eat(t_philo *philo, t_data *data);
+void			print_action(pthread_mutex_t *print,
+					char *str, char *clr, int id);
 
 #endif

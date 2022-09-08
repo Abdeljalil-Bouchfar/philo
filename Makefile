@@ -6,16 +6,17 @@
 #    By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/05 15:48:07 by abouchfa          #+#    #+#              #
-#    Updated: 2022/09/06 11:50:04 by abouchfa         ###   ########.fr        #
+#    Updated: 2022/09/08 06:22:02 by abouchfa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-CFLAGS = gcc -Wall -Wextra -Werror -pthread -fsanitize=address -g
+CFLAGS = gcc -Wall -Wextra -Werror -pthread -fsanitize=thread -g
 
 CFILES = philo.c \
 		time.c \
+		routine.c \
 		Utils/ft_atoi.c \
 		Utils/ft_putstr_fd.c \
 		Utils/print_error.c \

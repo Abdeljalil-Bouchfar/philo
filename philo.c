@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 13:36:05 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/06 11:59:29 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/08 06:00:51 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,20 @@ void	*routine(void *arg)
 {
 	int			i;
 	t_data		*data;
+	t_philo		*philo;
 
 	i = -1;
 	data = (t_data *) arg;
+	philo = data->philos[data->i];
+	while (data->min_eat)
+	{
+		eat(philo, data);
+		print_action(&(data->print), "is sleeping", BLUE, philo->id);
+		my_usleep(data->time_to_sleep);
+		print_action(&(data->print), "is thinking", RED, philo->id);
+		if (philo->min_eat != -1)
+			philo->min_eat--;
+	}
 	return (NULL);
 }
 
@@ -30,23 +41,19 @@ void	set_data(t_data *data)
 	data->philos = alloc(sizeof(t_philo *) * (data->philos_nbr + 1), data);
 	data->forks = alloc(sizeof(t_fork_lst *), data);
 	*(data->forks) = NULL;
-	while (++i < data->philos_nbr * 2)
+	while (++i < data->philos_nbr)
 	{
-		if (i <= data->philos_nbr)
-		{
-			data->philos[i] = alloc(sizeof(t_philo), data);
-			if (i == data->philos_nbr)
-				data->philos[i] = NULL;
-			else
-			{
-				data->philos[i]->id = i + 1;
-				data->philos[i]->left_fork = -1;
-				data->philos[i]->right_fork = -1;
-				data->philos[i]->status = -1;
-			}
-		}
-		insert_frok_lst(data->forks, i + 1, -1);
+		data->philos[i] = alloc(sizeof(t_philo), data);
+		data->philos[i]->id = i + 1;
+		data->philos[i]->is_eating = 0;
+		data->philos[i]->min_eat = data->min_eat;
+		data->philos[i]->left_fork = NULL;
+		data->philos[i]->right_fork = NULL;
+		insert_frok_lst(data->forks, i + 1);
 	}
+	data->philos[i] = alloc(sizeof(t_philo), data);
+	data->philos[i] = NULL;
+	pthread_mutex_init(&(data->print), NULL);
 }
 
 void	parse_input(int ac, char **av, t_data *data)
@@ -68,11 +75,12 @@ void	parse_input(int ac, char **av, t_data *data)
 	}
 	data->start_time = get_current_time();
 	data->philos_nbr = ft_atoi(av[1]);
-	data->time_to_die = ft_atoi(av[2]);
-	data->time_to_eat = ft_atoi(av[3]);
-	data->time_to_sleep = ft_atoi(av[4]);
+	data->time_to_die = ft_atoi(av[2]) * 1000;
+	data->time_to_eat = ft_atoi(av[3]) * 1000;
+	data->time_to_sleep = ft_atoi(av[4]) * 1000;
+	data->min_eat = -1;
 	if (ac == 6)
-		data->philo_meat_nbr = ft_atoi(av[5]);
+		data->min_eat = ft_atoi(av[5]);
 }
 
 int	main(int ac, char **av)
@@ -93,12 +101,12 @@ int	main(int ac, char **av)
 	threads = alloc(sizeof(pthread_t) * data.philos_nbr, &data);
 	while (++i < data.philos_nbr)
 	{
+		data.i = i;
 		if (pthread_create(&threads[i], NULL, routine, &data) != 0)
 			exit(1);
 	}
 	i = -1;
 	while (++i < data.philos_nbr)
 		pthread_join(threads[i], NULL);
-	printf("%lld\n", data.start_time);
 	ft_lstclear(data.alloc_list);
 }

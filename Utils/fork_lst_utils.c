@@ -6,13 +6,13 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 09:27:26 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/06 11:47:55 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/08 03:16:07 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include  "../philo.h"
 
-static t_fork_lst	*ft_lstnew_fork(int id, int philo_id)
+static t_fork_lst	*ft_lstnew_fork(int id)
 {
 	t_fork_lst	*new;
 
@@ -20,17 +20,18 @@ static t_fork_lst	*ft_lstnew_fork(int id, int philo_id)
 	if (!new)
 		return (NULL);
 	new->id = id;
-	new->philo_id = philo_id;
+	new->philo_id = -1;
 	new->next = NULL;
+	pthread_mutex_init(&(new->status), NULL);
 	return (new);
 }
 
-void	insert_frok_lst(t_fork_lst	**head, int id, int philo_id)
+void	insert_frok_lst(t_fork_lst	**head, int id)
 {
 	t_fork_lst	*new;
 	t_fork_lst	*temp;
 
-	new = ft_lstnew_fork(id, philo_id);
+	new = ft_lstnew_fork(id);
 	if (!new)
 		return ;
 	if (*head == NULL)
