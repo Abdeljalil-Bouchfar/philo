@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abdeljalilbouchfar <abdeljalilbouchfar@    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 11:34:49 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/08 01:16:24 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/08 21:59:48 by abdeljalilb      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@ void	my_usleep(int mcrs)
 	usleep(mcrs);
 }
 
-unsigned long	get_current_time(void)
+unsigned long	get_current_time(unsigned long st_time)
 {
 	struct timeval	tp;
 
 	if (gettimeofday(&tp, NULL) == -1)
 		print_error("System call error\n");
-	return ((tp.tv_sec * 1000000) + tp.tv_usec);
+	return (((tp.tv_sec * 1000000) + tp.tv_usec) - st_time);
 }

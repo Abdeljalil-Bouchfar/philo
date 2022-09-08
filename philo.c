@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abdeljalilbouchfar <abdeljalilbouchfar@    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 13:36:05 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/08 06:00:51 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/08 22:19:58 by abdeljalilb      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ void	*routine(void *arg)
 	while (data->min_eat)
 	{
 		eat(philo, data);
-		print_action(&(data->print), "is sleeping", BLUE, philo->id);
+		print_action(data, "is sleeping", BLUE, philo->id);
 		my_usleep(data->time_to_sleep);
-		print_action(&(data->print), "is thinking", RED, philo->id);
+		print_action(data, "is thinking", RED, philo->id);
 		if (philo->min_eat != -1)
 			philo->min_eat--;
 	}
@@ -46,6 +46,7 @@ void	set_data(t_data *data)
 		data->philos[i] = alloc(sizeof(t_philo), data);
 		data->philos[i]->id = i + 1;
 		data->philos[i]->is_eating = 0;
+		data->philos[i]->last_time_eat = 0;
 		data->philos[i]->min_eat = data->min_eat;
 		data->philos[i]->left_fork = NULL;
 		data->philos[i]->right_fork = NULL;
@@ -73,7 +74,7 @@ void	parse_input(int ac, char **av, t_data *data)
 			print_error(": invalid argument\n");
 		}
 	}
-	data->start_time = get_current_time();
+	data->start_time = get_current_time(0);
 	data->philos_nbr = ft_atoi(av[1]);
 	data->time_to_die = ft_atoi(av[2]) * 1000;
 	data->time_to_eat = ft_atoi(av[3]) * 1000;
@@ -104,9 +105,11 @@ int	main(int ac, char **av)
 		data.i = i;
 		if (pthread_create(&threads[i], NULL, routine, &data) != 0)
 			exit(1);
+		//pthread_detach(threads[i]);
 	}
 	i = -1;
-	while (++i < data.philos_nbr)
-		pthread_join(threads[i], NULL);
-	ft_lstclear(data.alloc_list);
+	// while (++i < data.philos_nbr)
+	// 	pthread_join(threads[i], NULL);
+	// ft_lstclear(data.alloc_list);
+	check_dead(&data);
 }

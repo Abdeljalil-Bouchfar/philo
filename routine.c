@@ -3,25 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abdeljalilbouchfar <abdeljalilbouchfar@    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 11:59:10 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/08 07:09:45 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/08 22:33:20 by abdeljalilb      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	print_action(pthread_mutex_t *print, char *str, char *clr, int id)
+void	print_action(t_data *data, char *str, char *clr, int id)
 {
 	unsigned long	time;
 
-	time = get_current_time();
-	pthread_mutex_lock(print);
+	time = get_current_time(data->start_time);
+	pthread_mutex_lock(&(data->print));
 	printf("%s", clr);
 	printf("%lu %i %s\n", time / 1000, id, str);
 	printf("%s", RESET);
-	pthread_mutex_unlock(print);
+	pthread_mutex_unlock(&(data->print));
 }
 
 void	take_fork(t_philo *philo, t_data *data)
@@ -40,13 +40,13 @@ void	take_fork(t_philo *philo, t_data *data)
 			{
 				philo->left_fork = fork;
 				fork->philo_id = philo->id;
-				print_action(&(data->print), "has taken left fork", YELLOW, philo->id);
+				print_action(data, "has taken left fork", YELLOW, philo->id);
 			}
 			else if (philo->right_fork == NULL)
 			{
 				philo->right_fork = fork;
 				fork->philo_id = philo->id;
-				print_action(&(data->print), "has taken right fork", PURPLE, philo->id);
+				print_action(data, "has taken right fork", PURPLE, philo->id);
 			}
 			else
 				break ;
@@ -64,7 +64,8 @@ void	eat(t_philo *philo, t_data *data)
 		&& !philo->is_eating)
 	{
 		philo->is_eating = 1;
-		print_action(&(data->print), "is eating", GREEN, philo->id);
+		print_action(data, "is eating", GREEN, philo->id);
+		philo->last_time_eat = get_current_time(data->start_time);
 		my_usleep(data->time_to_eat);
 	}
 	if (philo->left_fork != NULL)
@@ -82,4 +83,25 @@ void	eat(t_philo *philo, t_data *data)
 		philo->right_fork = NULL;
 	}
 	philo->is_eating = 0;
+}
+
+void	check_dead(t_data *data)
+{
+	int	diff;
+	int	i;
+
+	i = -1;
+	while (++i < data->philos_nbr)
+	{
+		//printf("here %i\n", i);
+		diff = get_current_time(data->start_time) - data->philos[i]->last_time_eat;
+		if (diff >= data->time_to_die)
+		{
+			pthread_mutex_lock(&(data->print));
+			print_action(data, "is dead", WHITE, i);
+			return ;
+		}
+		if (i + 1 == data->philos_nbr)
+			i = -1;
+	}
 }

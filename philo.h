@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abdeljalilbouchfar <abdeljalilbouchfar@    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 15:57:03 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/08 07:09:54 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/08 22:16:04 by abdeljalilb      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 # define YELLOW "\033[0;33m"
 # define BLUE "\033[0;34m"
 # define PURPLE "\033[0;35m"
+# define CYAN "\033[0;36m"
+# define WHITE "\033[0;37m"
 # define RESET "\033[0m"
 
 /*
@@ -57,11 +59,12 @@ typedef struct s_fork_lst
 
 typedef struct s_philo
 {
-	int			id;
-	int			is_eating;
-	int			min_eat;
-	t_fork_lst	*left_fork;
-	t_fork_lst	*right_fork;
+	int				id;
+	unsigned long	last_time_eat;
+	int				is_eating;
+	int				min_eat;
+	t_fork_lst		*left_fork;
+	t_fork_lst		*right_fork;
 }	t_philo;
 
 typedef struct s_alloc_lst
@@ -87,7 +90,7 @@ typedef struct s_data
 
 //------------------ Time Functins ------------------
 
-unsigned long	get_current_time(void);
+unsigned long	get_current_time(unsigned long st_time);
 void			my_usleep(int mcrs);
 
 //--------------------- Utils -----------------------
@@ -101,7 +104,7 @@ void			insert_frok_lst(t_fork_lst	**head, int id);
 
 //--
 void			eat(t_philo *philo, t_data *data);
-void			print_action(pthread_mutex_t *print,
-					char *str, char *clr, int id);
+void			check_dead(t_data *data);
+void			print_action(t_data *data, char *str, char *clr, int id);
 
 #endif

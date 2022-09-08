@@ -3,16 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+         #
+#    By: abdeljalilbouchfar <abdeljalilbouchfar@    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/05 15:48:07 by abouchfa          #+#    #+#              #
-#    Updated: 2022/09/08 06:22:02 by abouchfa         ###   ########.fr        #
+#    Updated: 2022/09/08 21:56:17 by abdeljalilb      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-CFLAGS = gcc -Wall -Wextra -Werror -pthread -fsanitize=thread -g
+CFLAGS = gcc -Wall -Wextra -Werror -pthread #-fsanitize=thread -g
 
 CFILES = philo.c \
 		time.c \
