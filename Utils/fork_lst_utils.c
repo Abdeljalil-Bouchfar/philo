@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 09:27:26 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/08 03:16:07 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/10 05:05:01 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ static t_fork_lst	*ft_lstnew_fork(int id)
 	if (!new)
 		return (NULL);
 	new->id = id;
-	new->philo_id = -1;
 	new->next = NULL;
 	pthread_mutex_init(&(new->status), NULL);
 	return (new);

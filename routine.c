@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdeljalilbouchfar <abdeljalilbouchfar@    +#+  +:+       +#+        */
+/*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 11:59:10 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/08 22:33:20 by abdeljalilb      ###   ########.fr       */
+/*   Updated: 2022/09/11 00:34:45 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,91 +17,83 @@ void	print_action(t_data *data, char *str, char *clr, int id)
 	unsigned long	time;
 
 	time = get_current_time(data->start_time);
-	pthread_mutex_lock(&(data->print));
+	pthread_mutex_lock(&(data->print_mtx));
 	printf("%s", clr);
-	printf("%lu %i %s\n", time / 1000, id, str);
+	printf("%lu %i %s\n", time, id, str);
 	printf("%s", RESET);
-	pthread_mutex_unlock(&(data->print));
+	if (ft_strcmp("is dead 💀", str) == 0)
+		exit(0);
+	pthread_mutex_unlock(&(data->print_mtx));
 }
 
-void	take_fork(t_philo *philo, t_data *data)
+void	take_forks(t_philo *philo, t_data *data)
 {
 	int			i;
 	t_fork_lst	*fork;
 
 	i = -1;
 	fork = *(data->forks);
-	while (++i < data->philos_nbr)
-	{
-		pthread_mutex_lock(&(fork->status));
-		if (fork->philo_id == -1)
-		{
-			if (philo->left_fork == NULL)
-			{
-				philo->left_fork = fork;
-				fork->philo_id = philo->id;
-				print_action(data, "has taken left fork", YELLOW, philo->id);
-			}
-			else if (philo->right_fork == NULL)
-			{
-				philo->right_fork = fork;
-				fork->philo_id = philo->id;
-				print_action(data, "has taken right fork", PURPLE, philo->id);
-			}
-			else
-				break ;
-		}
-		pthread_mutex_unlock(&(fork->status));
+	while (fork->id != philo->id)
 		fork = fork->next;
-	}
+	pthread_mutex_lock(&(fork->status));
+	print_action(data, "has taken left fork 🍴", YELLOW, philo->id);
+	pthread_mutex_lock(&(fork->next->status));
+	print_action(data, "has taken right fork 🍴", YELLOW, philo->id);
+}
+
+void	release_forks(t_philo *philo, t_data *data)
+{
+	int			i;
+	t_fork_lst	*fork;
+
+	i = -1;
+	fork = *(data->forks);
+	while (fork->id != philo->id)
+		fork = fork->next;
 	pthread_mutex_unlock(&(fork->status));
+	pthread_mutex_unlock(&(fork->next->status));
 }
 
 void	eat(t_philo *philo, t_data *data)
-{ 
-	take_fork(philo, data);
-	if (philo->left_fork != NULL && philo->right_fork != NULL
-		&& !philo->is_eating)
-	{
-		philo->is_eating = 1;
-		print_action(data, "is eating", GREEN, philo->id);
-		philo->last_time_eat = get_current_time(data->start_time);
-		my_usleep(data->time_to_eat);
-	}
-	if (philo->left_fork != NULL)
-	{
-		pthread_mutex_lock(&(philo->left_fork->status));
-		philo->left_fork->philo_id = -1;
-		pthread_mutex_unlock(&(philo->left_fork->status));
-		philo->left_fork = NULL;
-	}
-	if (philo->right_fork != NULL)
-	{
-		pthread_mutex_lock(&(philo->right_fork->status));
-		philo->right_fork->philo_id = -1;
-		pthread_mutex_unlock(&(philo->right_fork->status));
-		philo->right_fork = NULL;
-	}
+{
+	take_forks(philo, data);
+	print_action(data, "is eating 🍽", GREEN, philo->id);
+	pthread_mutex_lock(&(philo->last_time_eat_mtx));
+	philo->last_time_eat = get_current_time(data->start_time);
+	pthread_mutex_unlock(&(philo->last_time_eat_mtx));
+	pthread_mutex_lock(&(philo->is_eating_mtx));
+	philo->is_eating = 1;
+	pthread_mutex_unlock(&(philo->is_eating_mtx));
+	my_usleep(data->time_to_eat);
+	pthread_mutex_lock(&(philo->is_eating_mtx));
 	philo->is_eating = 0;
+	pthread_mutex_unlock(&(philo->is_eating_mtx));
+	release_forks(philo, data);
 }
 
-void	check_dead(t_data *data)
+void	check_dead(t_philo *philos, t_data *data)
 {
-	int	diff;
-	int	i;
+	unsigned long	current_time;
+	unsigned long	think_time;
+	int				i;
 
-	i = -1;
-	while (++i < data->philos_nbr)
+	i = 0;
+	while (1)
 	{
-		//printf("here %i\n", i);
-		diff = get_current_time(data->start_time) - data->philos[i]->last_time_eat;
-		if (diff >= data->time_to_die)
-		{
-			pthread_mutex_lock(&(data->print));
-			print_action(data, "is dead", WHITE, i);
-			return ;
-		}
-		if (i + 1 == data->philos_nbr)
-			i = -1;
+		current_time = get_current_time(data->start_time);
+		pthread_mutex_lock(&(philos[i].last_time_eat_mtx));
+		think_time = current_time - philos[i].last_time_eat;
+		pthread_mutex_unlock(&(philos[i].last_time_eat_mtx));
+		pthread_mutex_lock(&(philos[i].is_eating_mtx));
+		if (think_time >= data->time_to_die && !philos[i].is_eating)
+			print_action(data, "is dead 💀", RED, philos[i].id);
+		pthread_mutex_unlock(&(philos[i].is_eating_mtx));
+		pthread_mutex_lock(&(philos[i].eat_counter_mtx));
+		if (philos[i].eat_counter == data->must_eat_nbr)
+			exit(0);
+		pthread_mutex_unlock(&(philos[i].eat_counter_mtx));
+		i++;
+		i %= data->philos_nbr;
+		usleep(100 * data->philos_nbr);
 	}
 }

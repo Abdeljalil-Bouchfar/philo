@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   time.c                                             :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/06 11:34:49 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/10 22:09:11 by abouchfa         ###   ########.fr       */
+/*   Created: 2022/07/02 20:05:04 by otoufah           #+#    #+#             */
+/*   Updated: 2022/09/11 00:32:15 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "../philo.h"
 
-unsigned long	get_current_time(unsigned long st_time)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-	struct timeval	tp;
+	int	i;
 
-	if (gettimeofday(&tp, NULL) == -1)
-		print_error("System call error\n");
-	return (((tp.tv_sec * 1000) + tp.tv_usec / 1000) - st_time);
-}
-
-void	my_usleep(unsigned long mili_sec)
-{
-	unsigned long	start;
-
-	start = get_current_time(0);
-	while (get_current_time(start) < mili_sec)
-		usleep(100);
+	if (!s1 || !s2)
+		return (-1);
+	if (!s1 && !s2)
+		return (0);
+	i = 0;
+	while (s1[i] || s2[i])
+	{
+		if (s1[i] != s2[i])
+			return (s1[i] - s2[i]);
+		i++;
+	}
+	return (0);
 }

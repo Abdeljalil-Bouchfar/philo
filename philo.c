@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abdeljalilbouchfar <abdeljalilbouchfar@    +#+  +:+       +#+        */
+/*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 13:36:05 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/08 22:19:58 by abdeljalilb      ###   ########.fr       */
+/*   Updated: 2022/09/11 00:19:18 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,47 +14,51 @@
 
 void	*routine(void *arg)
 {
-	int			i;
-	t_data		*data;
 	t_philo		*philo;
+	t_data		*data;
 
-	i = -1;
-	data = (t_data *) arg;
-	philo = data->philos[data->i];
-	while (data->min_eat)
+	philo = (t_philo *) arg;
+	data = philo->data;
+	while (philo->eat_counter < data->must_eat_nbr || data->must_eat_nbr == -1)
 	{
 		eat(philo, data);
-		print_action(data, "is sleeping", BLUE, philo->id);
+		print_action(data, "is sleeping 😴", BLUE, philo->id);
 		my_usleep(data->time_to_sleep);
-		print_action(data, "is thinking", RED, philo->id);
-		if (philo->min_eat != -1)
-			philo->min_eat--;
+		print_action(data, "is thinking 🤔", BLUE, philo->id);
+		if (data->must_eat_nbr != -1)
+		{
+			pthread_mutex_lock(&(philo->eat_counter_mtx));
+			philo->eat_counter++;
+			pthread_mutex_unlock(&(philo->eat_counter_mtx));
+		}
 	}
+	pthread_detach(*(philo->thread));
 	return (NULL);
 }
 
-void	set_data(t_data *data)
+t_philo	*set_data(t_data *data)
 {
-	int	i;
+	t_philo	*philos;
+	int		i;
 
-	i = -1;
-	data->philos = alloc(sizeof(t_philo *) * (data->philos_nbr + 1), data);
-	data->forks = alloc(sizeof(t_fork_lst *), data);
+	philos = malloc(sizeof(t_philo) * (data->philos_nbr));
+	data->forks = malloc(sizeof(t_fork_lst *));
 	*(data->forks) = NULL;
+	i = -1;
 	while (++i < data->philos_nbr)
 	{
-		data->philos[i] = alloc(sizeof(t_philo), data);
-		data->philos[i]->id = i + 1;
-		data->philos[i]->is_eating = 0;
-		data->philos[i]->last_time_eat = 0;
-		data->philos[i]->min_eat = data->min_eat;
-		data->philos[i]->left_fork = NULL;
-		data->philos[i]->right_fork = NULL;
+		philos[i].id = i + 1;
+		philos[i].eat_counter = 0;
+		philos[i].is_eating = 0;
+		philos[i].last_time_eat = 0;
+		philos[i].thread = malloc(sizeof(pthread_t));
+		philos[i].data = data;
+		pthread_mutex_init(&(philos[i].last_time_eat_mtx), NULL);
+		pthread_mutex_init(&(philos[i].eat_counter_mtx), NULL);
+		pthread_mutex_init(&(philos[i].is_eating_mtx), NULL);
 		insert_frok_lst(data->forks, i + 1);
 	}
-	data->philos[i] = alloc(sizeof(t_philo), data);
-	data->philos[i] = NULL;
-	pthread_mutex_init(&(data->print), NULL);
+	return (philos);
 }
 
 void	parse_input(int ac, char **av, t_data *data)
@@ -76,40 +80,35 @@ void	parse_input(int ac, char **av, t_data *data)
 	}
 	data->start_time = get_current_time(0);
 	data->philos_nbr = ft_atoi(av[1]);
-	data->time_to_die = ft_atoi(av[2]) * 1000;
-	data->time_to_eat = ft_atoi(av[3]) * 1000;
-	data->time_to_sleep = ft_atoi(av[4]) * 1000;
-	data->min_eat = -1;
+	data->time_to_die = ft_atoi(av[2]);
+	data->time_to_eat = ft_atoi(av[3]);
+	data->time_to_sleep = ft_atoi(av[4]);
+	data->must_eat_nbr = -1;
 	if (ac == 6)
-		data->min_eat = ft_atoi(av[5]);
+		data->must_eat_nbr = ft_atoi(av[5]);
+	pthread_mutex_init(&(data->print_mtx), NULL);
 }
 
 int	main(int ac, char **av)
 {
 	int			i;
 	t_data		data;
-	pthread_t	*threads;
+	t_philo		*philos;
 
 	if (ac < 5)
 		print_error("Error: Too few arguments!\n");
 	else if (ac > 6)
 		print_error("Error: Too many arguments!\n");
-	data.alloc_list = malloc(sizeof(t_alloc_lst *));
-	*(data.alloc_list) = NULL;
 	parse_input(ac, av, &data);
-	set_data(&data);
+	philos = set_data(&data);
 	i = -1;
-	threads = alloc(sizeof(pthread_t) * data.philos_nbr, &data);
 	while (++i < data.philos_nbr)
-	{
-		data.i = i;
-		if (pthread_create(&threads[i], NULL, routine, &data) != 0)
-			exit(1);
-		//pthread_detach(threads[i]);
-	}
+		if (i % 2 == 0)
+			pthread_create(philos[i].thread, NULL, routine, &philos[i]);
+	usleep(100 * data.philos_nbr);
 	i = -1;
-	// while (++i < data.philos_nbr)
-	// 	pthread_join(threads[i], NULL);
-	// ft_lstclear(data.alloc_list);
-	check_dead(&data);
+	while (++i < data.philos_nbr)
+		if (i % 2 != 0)
+			pthread_create(philos[i].thread, NULL, routine, &philos[i]);
+	check_dead(philos, &data);
 }
