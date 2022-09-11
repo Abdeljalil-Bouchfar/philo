@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 11:59:10 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/11 00:34:45 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/12 00:16:38 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,10 @@ void	check_dead(t_philo *philos, t_data *data)
 	i = 0;
 	while (1)
 	{
+		pthread_mutex_lock(&(philos[i].eat_counter_mtx));
+		if (philos[i].eat_counter == data->must_eat_nbr)
+			return ;
+		pthread_mutex_unlock(&(philos[i].eat_counter_mtx));
 		current_time = get_current_time(data->start_time);
 		pthread_mutex_lock(&(philos[i].last_time_eat_mtx));
 		think_time = current_time - philos[i].last_time_eat;
@@ -88,10 +92,6 @@ void	check_dead(t_philo *philos, t_data *data)
 		if (think_time >= data->time_to_die && !philos[i].is_eating)
 			print_action(data, "is dead 💀", RED, philos[i].id);
 		pthread_mutex_unlock(&(philos[i].is_eating_mtx));
-		pthread_mutex_lock(&(philos[i].eat_counter_mtx));
-		if (philos[i].eat_counter == data->must_eat_nbr)
-			exit(0);
-		pthread_mutex_unlock(&(philos[i].eat_counter_mtx));
 		i++;
 		i %= data->philos_nbr;
 		usleep(100 * data->philos_nbr);

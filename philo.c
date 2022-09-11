@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 13:36:05 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/11 00:19:18 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/12 00:20:27 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,5 +110,7 @@ int	main(int ac, char **av)
 	while (++i < data.philos_nbr)
 		if (i % 2 != 0)
 			pthread_create(philos[i].thread, NULL, routine, &philos[i]);
+	// while (++i < data.philos_nbr)
+	// 	pthread_join(*(philos[i].thread), NULL);
 	check_dead(philos, &data);
 }
