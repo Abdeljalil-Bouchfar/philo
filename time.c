@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 11:34:49 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/10 22:09:11 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/13 23:10:49 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ unsigned long	get_current_time(unsigned long st_time)
 	struct timeval	tp;
 
 	if (gettimeofday(&tp, NULL) == -1)
-		print_error("System call error\n");
+		ft_putstr_fd("System call error\n", 2);
 	return (((tp.tv_sec * 1000) + tp.tv_usec / 1000) - st_time);
 }
 

@@ -6,31 +6,26 @@
 #    By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/05 15:48:07 by abouchfa          #+#    #+#              #
-#    Updated: 2022/09/13 03:13:29 by abouchfa         ###   ########.fr        #
+#    Updated: 2022/09/13 23:23:49 by abouchfa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-CFLAGS = gcc -Wall -Wextra -Werror -fsanitize=thread -g
+CFLAGS = gcc -Wall -Wextra -Werror -fsanitize=thread
 
 CFILES = philo.c \
 		time.c \
 		routine.c \
+		Utils/validate_input.c \
 		Utils/ft_atoi.c \
 		Utils/ft_strcmp.c \
 		Utils/ft_putstr_fd.c \
-		Utils/print_error.c \
-		Utils/fork_lst_utils.c \
-
-CBONUS_FILES = bonus.c
 
 all: $(NAME)
 
 $(NAME): $(CFILES)
 	$(CFLAGS) $(CFILES) -o $(NAME)
-
-bonus: all
 
 clean:
 	rm -rf $(NAME)
