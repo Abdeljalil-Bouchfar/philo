@@ -6,13 +6,13 @@
 #    By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/05 15:48:07 by abouchfa          #+#    #+#              #
-#    Updated: 2022/09/13 23:23:49 by abouchfa         ###   ########.fr        #
+#    Updated: 2022/09/14 00:32:48 by abouchfa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-CFLAGS = gcc -Wall -Wextra -Werror -fsanitize=thread
+CFLAGS = gcc -Wall -Wextra -Werror #-fsanitize=thread
 
 CFILES = philo.c \
 		time.c \

@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 13:36:05 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/13 23:20:21 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/14 00:33:08 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	supervisor(t_philo *philos, t_data *data)
 			return (1);
 		i++;
 		i %= data->philos_nbr;
-		usleep(100 * data->philos_nbr);
+		usleep(100);
 	}
 	return (0);
 }
@@ -114,7 +114,7 @@ int	main(int ac, char **av)
 	while (++i < data->philos_nbr)
 		if (i % 2 == 0)
 			pthread_create(philos[i].thread, NULL, routine, &philos[i]);
-	usleep(100 * data->philos_nbr);
+	usleep(250);
 	i = -1;
 	while (++i < data->philos_nbr)
 		if (i % 2 != 0)
