@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 11:59:10 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/12 00:16:38 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/13 03:17:06 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@ void	print_action(t_data *data, char *str, char *clr, int id)
 	printf("%s", clr);
 	printf("%lu %i %s\n", time, id, str);
 	printf("%s", RESET);
-	if (ft_strcmp("is dead 💀", str) == 0)
-		exit(0);
 	pthread_mutex_unlock(&(data->print_mtx));
 }
 
@@ -71,18 +69,22 @@ void	eat(t_philo *philo, t_data *data)
 	release_forks(philo, data);
 }
 
-void	check_dead(t_philo *philos, t_data *data)
+int	check_dead(t_philo *philos, t_data *data)
 {
 	unsigned long	current_time;
 	unsigned long	think_time;
 	int				i;
+	int				total;
 
 	i = 0;
+	total = 0;
 	while (1)
 	{
+		if (total == data->philos_nbr)
+			return (1);
 		pthread_mutex_lock(&(philos[i].eat_counter_mtx));
 		if (philos[i].eat_counter == data->must_eat_nbr)
-			return ;
+			total++;
 		pthread_mutex_unlock(&(philos[i].eat_counter_mtx));
 		current_time = get_current_time(data->start_time);
 		pthread_mutex_lock(&(philos[i].last_time_eat_mtx));
@@ -90,10 +92,15 @@ void	check_dead(t_philo *philos, t_data *data)
 		pthread_mutex_unlock(&(philos[i].last_time_eat_mtx));
 		pthread_mutex_lock(&(philos[i].is_eating_mtx));
 		if (think_time >= data->time_to_die && !philos[i].is_eating)
-			print_action(data, "is dead 💀", RED, philos[i].id);
+		{
+			pthread_mutex_lock(&(data->print_mtx));
+			printf("%s%lu %i is dead 💀\n", RED, current_time, philos[i].id);
+			return (1);
+		}
 		pthread_mutex_unlock(&(philos[i].is_eating_mtx));
 		i++;
 		i %= data->philos_nbr;
 		usleep(100 * data->philos_nbr);
 	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 15:57:03 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/12 00:17:00 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/13 03:23:15 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void			insert_frok_lst(t_fork_lst	**head, int id);
 
 //--
 void			eat(t_philo *philo, t_data *data);
-void			check_dead(t_philo *philos, t_data *data);
+int				check_dead(t_philo *philos, t_data *data);
 void			print_action(t_data *data, char *str, char *clr, int id);
 
 #endif

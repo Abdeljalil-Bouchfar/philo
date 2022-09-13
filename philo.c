@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 13:36:05 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/12 00:20:27 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/13 03:23:09 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	*routine(void *arg)
 			pthread_mutex_unlock(&(philo->eat_counter_mtx));
 		}
 	}
-	pthread_detach(*(philo->thread));
+	//pthread_detach(*(philo->thread));
 	return (NULL);
 }
 
@@ -112,5 +112,5 @@ int	main(int ac, char **av)
 			pthread_create(philos[i].thread, NULL, routine, &philos[i]);
 	// while (++i < data.philos_nbr)
 	// 	pthread_join(*(philos[i].thread), NULL);
-	check_dead(philos, &data);
+	return (check_dead(philos, &data));
 }
