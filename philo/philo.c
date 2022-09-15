@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 13:36:05 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/14 00:33:08 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/15 12:21:33 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	*routine(void *arg)
 
 	philo = (t_philo *) arg;
 	data = philo->data;
-	while (philo->eat_counter < data->must_eat_nbr || data->must_eat_nbr == -1)
+	while (1)
 	{
 		eat(philo, data);
 		print_action(data, "is sleeping 😴", BLUE, philo->id);
@@ -102,22 +102,23 @@ int	main(int ac, char **av)
 	t_data		*data;
 	t_philo		*philos;
 
+	if (ac == 5 || ac == 6)
+	{
+		data = malloc(sizeof(t_data));
+		if (validate_input(ac, av))
+			return (1);
+		philos = set_data(ac, av, data);
+		i = -1;
+		while (++i < data->philos_nbr)
+		{
+			pthread_create(philos[i].thread, NULL, routine, &philos[i]);
+			usleep(60);
+		}
+		return (supervisor(philos, data));
+	}
 	if (ac < 5)
 		ft_putstr_fd("Error: Too few arguments!\n", 2);
 	else if (ac > 6)
 		ft_putstr_fd("Error: Too many arguments!\n", 2);
-	data = malloc(sizeof(t_data));
-	if (validate_input(ac, av))
-		return (1);
-	philos = set_data(ac, av, data);
-	i = -1;
-	while (++i < data->philos_nbr)
-		if (i % 2 == 0)
-			pthread_create(philos[i].thread, NULL, routine, &philos[i]);
-	usleep(250);
-	i = -1;
-	while (++i < data->philos_nbr)
-		if (i % 2 != 0)
-			pthread_create(philos[i].thread, NULL, routine, &philos[i]);
-	return (supervisor(philos, data));
+	return (1);
 }
