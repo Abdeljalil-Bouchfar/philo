@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 15:57:03 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/13 23:18:25 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/17 10:03:48 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,22 +32,22 @@ typedef struct s_data
 {
 	int				must_eat_nbr;
 	int				philos_nbr;
+	int				total_eat;
 	unsigned long	start_time;
 	unsigned long	time_to_die;
 	unsigned long	time_to_eat;
 	unsigned long	time_to_sleep;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mtx;
+	pthread_mutex_t	total_eat_mtx;
 }	t_data;
 
 typedef struct s_philo
 {
 	int				id;
-	int				eat_counter;
 	unsigned long	last_time_eat;
 	pthread_t		*thread;
 	t_data			*data;
-	pthread_mutex_t	eat_counter_mtx;
 	pthread_mutex_t	last_time_eat_mtx;
 }	t_philo;
 

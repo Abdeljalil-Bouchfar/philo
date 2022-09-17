@@ -6,7 +6,7 @@
 /*   By: abouchfa <abouchfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 11:59:10 by abouchfa          #+#    #+#             */
-/*   Updated: 2022/09/13 22:57:35 by abouchfa         ###   ########.fr       */
+/*   Updated: 2022/09/17 10:12:56 by abouchfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,9 @@ void	print_action(t_data *data, char *str, char *clr, int id)
 
 	time = get_current_time(data->start_time);
 	pthread_mutex_lock(&(data->print_mtx));
+	printf("%lu ", time);
 	printf("%s", clr);
-	printf("%lu %i %s\n", time, id, str);
+	printf("%i %s\n", id, str);
 	printf("%s", RESET);
 	if (ft_strcmp("is dead 💀", str) != 0)
 		pthread_mutex_unlock(&(data->print_mtx));
