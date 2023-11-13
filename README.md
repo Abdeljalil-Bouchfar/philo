@@ -10,7 +10,7 @@ share. The threading API provides condition variables and mutexes, which are pri
 The primary advantages of using threads are that they make it easy to share
 data between cooperating threads and that some algorithms transpose more naturally to a multithreaded implementation than to a multi-process implementation. Furthermore, a multithreaded application can transparently take advantage of the possibilities for parallel processing on multiprocessor hardware.
 
-<img width="982" alt="1" src="https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/a06f9e2f-25b8-4f7f-a4c7-00741d65c35b">
+<img width="982" alt="Untitled" src="https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/b432e7e4-6e17-4cc8-aeeb-57afcddb562d">
 
 Besides global memory, threads also share a number of other attributes (i.e., these
 attributes are global to a process, rather than specific to a thread). These attributes
@@ -91,7 +91,8 @@ threads.
 
 The pthread_create() function creates a new thread.
 
-<img width="1216" alt="2" src="https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/284758bf-7978-47c6-baf8-7f3bc2b84d66">
+<img width="1216" alt="Untitled (1)" src="https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/ff38e3df-19c1-4f35-bb99-271963a52e8b">
+
 
 The new thread commences execution by calling the function identified by start
 with the argument arg (i.e., start(arg)). The thread that calls pthread_create() continues
@@ -121,7 +122,7 @@ value that can be obtained in another thread by calling pthread_join().
 The pthread_join() function waits for the thread identified by thread to terminate. (If
 that thread has already terminated, pthread_join() returns immediately.) This operation is termed joining.
 
-<img width="975" alt="3" src="https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/82361800-55f1-4e0a-94d0-c68f43098341">
+<img width="975" alt="Untitled (2)" src="https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/2690d1d1-53d6-4fe7-ab14-57b8adad0d29">
 
 If retval is a non-NULL pointer, then it receives a copy of the terminated thread’s
 return value—that is, the value that was specified when the thread performed a
@@ -136,13 +137,13 @@ Each thread within a process is uniquely identified by a thread ID. This ID is
 returned to the caller of pthread_create(), and a thread can obtain its own ID using
 pthread_self().
 
-<img width="970" alt="4" src="https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/12705152-f406-4d70-a805-1c6ebf6fd61d">
+<img width="970" alt="Untitled (3)" src="https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/29ea15f2-8d1b-452b-bee7-e1efa839bc9f">
 
 ### Thread detaching
 
 By default, a thread is joinable, meaning that when it terminates, another thread can obtain its return status using pthread_join(). Sometimes, we don’t care about the thread’s return status; we simply want the system to automatically clean up and remove the thread when it terminates. In this case, we can mark the thread as detached, by making a call to pthread_detach() specifying the thread’s identifier in a thread.
 
-![5](https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/7f6a656c-7ec4-4934-b11b-cfd57316c42d)
+![Untitled (4)](https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/c6422a40-0b38-4efc-bc7b-13bde13ebb62)
 
 Once a thread has been detached, it is no longer possible to use pthread_join() to obtain its return status, and the thread can’t be made joinable again.
 Detaching a thread doesn’t make it immune to a call to exit() in another thread or a return in the main thread. In such an event, all threads in the process are immediately terminated, regardless of whether they are joinable or detached. To put things another way, pthread_detach() simply controls what happens after a thread terminates, not how or when it terminates.
@@ -173,14 +174,14 @@ In general, we employ a different mutex for each shared resource (which may cons
 
 If multiple threads try to execute this block of code (a critical section), the fact that only one thread can hold the mutex (the others remain blocked) means that only one thread at a time can enter the block:
 
-![1](https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/ccc39b5e-0014-46ff-be03-5c24c111327f)
+![Untitled (5)](https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/08c606a9-85ec-4b89-8dd4-0151cd852ede)
 
 ### Locking and Unlocking a Mutex
 
 After initialization, a mutex is unlocked. To lock and unlock a mutex, we use the
 pthread_mutex_lock() and pthread_mutex_unlock() functions.
 
-![2](https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/e6cb897a-5ccb-4682-a71a-ee256b710274)
+![Untitled (6)](https://github.com/Abdeljalil-Bouchfar/philo/assets/55533328/1123906c-70e6-4031-9e14-d279c8772a33)
 
 To lock a mutex, we specify the mutex in a call to pthread_mutex_lock(). If the mutex is currently unlocked, this call locks the mutex and returns immediately. If the mutex is currently locked by another thread, then pthread_mutex_lock() blocks until the mutex is unlocked, at which point it locks the mutex and returns.
 If the calling thread itself has already locked the mutex given to pthread_mutex_lock(), then, for the default type of mutex, one of two implementation-defined possibilities may result: the thread deadlocks, blocked trying to lock a mutex that it already owns, or the call fails, returning the error EDEADLK. On Linux, the thread deadlocks by default.
